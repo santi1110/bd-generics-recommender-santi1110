@@ -13,8 +13,8 @@ import java.util.Random;
  */
 public class PrimeVideoRecommender {
     // PARTICIPANT -- Update the generic types in PrimeVideoRecommender
-    private MostRecentlyUsed<?> mostRecentlyViewed;
-    private ReadOnlyDao<?, ?> primeVideoDao;
+    private MostRecentlyUsed<PrimeVideo> mostRecentlyViewed;
+    private ReadOnlyDao<Long, PrimeVideo> primeVideoDao;
     private Random random;
 
     /**
@@ -25,8 +25,8 @@ public class PrimeVideoRecommender {
      * @param random             the random
      */
     // PARTICIPANT -- Update the generic types in PrimeVideoRecommender
-    public PrimeVideoRecommender(MostRecentlyUsed<?> mostRecentlyViewed,
-                                 ReadOnlyDao<?, ?> primeVideoDao, Random random) {
+    public PrimeVideoRecommender(MostRecentlyUsed<PrimeVideo> mostRecentlyViewed,
+                                 ReadOnlyDao<Long, PrimeVideo> primeVideoDao, Random random) {
         this.mostRecentlyViewed = mostRecentlyViewed;
         this.primeVideoDao = primeVideoDao;
         this.random = random;
@@ -40,6 +40,11 @@ public class PrimeVideoRecommender {
      * @param videoId ID of the video that was watched on Prime Video
      */
     public void watch(long videoId) {
+       PrimeVideo primeVideo =  primeVideoDao.get(videoId);
+       if (primeVideo == null){
+           throw new IllegalArgumentException("Video not found for id" + videoId);
+       }
+       mostRecentlyViewed.add(primeVideo);
         // PARTICIPANT -- Implement watch()
     }
 
@@ -56,7 +61,17 @@ public class PrimeVideoRecommender {
      * @return PrimeVideo to recommend watching.
      */
     public PrimeVideo getRecommendation() {
+        if (mostRecentlyViewed.getSize() == 0){
+            return null;
+        }
+        int randomIndex = this.random.nextInt(mostRecentlyViewed.getSize());
+        PrimeVideo randomVideo = mostRecentlyViewed.get(randomIndex);
         // PARTICIPANT -- Implement getRecommendation()
-        return null;
+        Long recommendedId = randomVideo.getMostSimilarId();
+        if (recommendedId == null){
+            return null;
+        }
+        PrimeVideo recommendedVideo = primeVideoDao.get(recommendedId);
+        return recommendedVideo;
     }
 }

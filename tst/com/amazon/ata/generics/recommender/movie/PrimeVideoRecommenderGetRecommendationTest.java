@@ -17,8 +17,8 @@ public class PrimeVideoRecommenderGetRecommendationTest {
     private File kidsMovies = new File("./tst/resources/kidsmovies.csv");
 
     // PARTICIPANT -- Update the generic types in PrimeVideoRecommender
-    private MostRecentlyUsed<?> mostRecentlyViewed;
-    private ReadOnlyDao<?, ?> readOnlyDAO;
+    private MostRecentlyUsed<PrimeVideo> mostRecentlyViewed;
+    private ReadOnlyDao<Long,PrimeVideo> readOnlyDAO;
     private Random random;
 
     private PrimeVideoRecommender primeVideoRecommender;
@@ -47,9 +47,13 @@ public class PrimeVideoRecommenderGetRecommendationTest {
     public void getRecommendation_singleVideoWatched_returnsRecommendation() {
         // GIVEN
         long[] moviesWatched = {1};
-        long expectedRecommendation = 2;
+        long expectedRecommendation =2;
+        primeVideoRecommender.watch(1);
+        //WHEN
+        PrimeVideo result = primeVideoRecommender.getRecommendation();
+        //then
 
-        assertTrue(false, "Not yet implemented.");
+        assertEquals(expectedRecommendation, result.getId(), "Expeceted recomended be correct");
 
     }
 
